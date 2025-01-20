@@ -1,16 +1,14 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-
 plugins {
+    alias(libs.plugins.compose) apply false
+    alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.dokka)
     alias(libs.plugins.gitSemVer)
     alias(libs.plugins.kotlin.qa)
     alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.ktor) apply false
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.multiJvmTesting)
-    alias(libs.plugins.publishOnCentral)
+//    alias(libs.plugins.publishOnCentral)
     alias(libs.plugins.taskTree)
 }
 
@@ -25,7 +23,7 @@ subprojects {
         apply(plugin = kotlin.qa.id)
         apply(plugin = kotlinx.serialization.id)
         apply(plugin = multiJvmTesting.id)
-        apply(plugin = publishOnCentral.id)
+//        apply(plugin = publishOnCentral.id)
         apply(plugin = taskTree.id)
     }
 
