@@ -26,4 +26,7 @@ gitHooks {
     createHooks()
 }
 
-rootProject.name = "Template-for-Kotlin-Multiplatform-Projects".lowercase()
+rootProject.name = "rstcovers-task-manager".lowercase()
+include(":common")
+include(":frontend")
+include(":backend")
