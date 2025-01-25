@@ -1,0 +1,59 @@
+services:
+  keycloak-db:
+    image: postgres:17.2
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: keycloak
+      POSTGRES_DB: keycloak
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "keycloak"]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    networks:
+      - local_network
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.0
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: example
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "exec 3<>/dev/tcp/localhost/9000; \
+        echo -en 'GET /health/ready' >&3; \
+        # Give the server a moment to respond, then search for 'UP'
+        if timeout 3 cat <&3 | grep -m 1 'UP'; then \
+          exec 3<&-; exec 3>&-; exit 0; \
+        else \
+          exec 3<&-; exec 3>&-; exit 1; \
+        fi"
+      ]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    command: ["start-dev"]
+    ports:
+      - "7080:7080"
+      - "7443:7443"
+      - "9000:9000"
+    networks:
+      - local_network
+
+networks:
+  local_network:
+    driver: bridge
