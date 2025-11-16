@@ -1,0 +1,16 @@
+product:
+  type: lib
+  platforms: [jvm, js]
+
+settings:
+  kotlin:
+    serialization:
+      enabled: true
+      format: json
+#dependencies:
+#  - $compose.foundation: exported
+#  - $compose.material3: exported
+#
+#settings:
+#  compose:
+#    enabled: true
