@@ -2,11 +2,19 @@ product:
   type: lib
   platforms: [jvm, js]
 
+dependencies:
+  - org.jetbrains.kotlinx:kotlinx-datetime:0.7.1
+  - io.arrow-kt:arrow-core:2.2.0
+  - io.arrow-kt:arrow-fx-coroutines:2.2.0
+
 settings:
   kotlin:
     serialization:
       enabled: true
       format: json
+    freeCompilerArgs:
+      - -Xopt-in=kotlin.uuid.ExperimentalUuidApi
+      - -Xopt-in=kotlin.time.ExperimentalTime
 #dependencies:
 #  - $compose.foundation: exported
 #  - $compose.material3: exported

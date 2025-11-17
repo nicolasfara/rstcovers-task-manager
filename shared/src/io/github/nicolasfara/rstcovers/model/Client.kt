@@ -1,4 +1,4 @@
-package it.nicolasfarabegoli.rstcovers.model
+package io.github.nicolasfara.rstcovers.model
 
 import kotlinx.serialization.Serializable
 
