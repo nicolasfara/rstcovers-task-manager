@@ -12,6 +12,7 @@ settings:
     serialization:
       enabled: true
       format: json
+      version: 1.9.0
     freeCompilerArgs:
       - -opt-in=kotlin.uuid.ExperimentalUuidApi
       - -opt-in=kotlin.time.ExperimentalTime
