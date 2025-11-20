@@ -1,20 +1,8 @@
-package io.github.nicolasfara.rstcovers.valueobjects
+package io.github.nicolasfara.rstcovers.domain.customer
 
 import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmInline
 import kotlin.uuid.Uuid
-
-@Serializable
-@JvmInline
-value class OrderId(val id: Uuid = Uuid.random())
-
-@Serializable
-@JvmInline
-value class TaskId(val id: Uuid = Uuid.random())
-
-@Serializable
-@JvmInline
-value class ManufacturingId(val id: Uuid = Uuid.random())
 
 @Serializable
 @JvmInline
@@ -68,30 +56,12 @@ value class Address(val value: String) {
 }
 
 @Serializable
-@JvmInline
-value class Hours(val value: Double) {
-    init {
-        require(value >= 0.0) { "Hours must be positive" }
-    }
-
-    operator fun plus(other: Hours): Hours = Hours(value + other.value)
-    operator fun minus(other: Hours): Hours = Hours(value - other.value)
-    operator fun unaryMinus(): Hours = Hours(-value)
-    operator fun compareTo(other: Hours): Int = value.compareTo(other.value)
-
-    fun isZero(): Boolean = value == 0.0
-    fun isGreaterThan(other: Hours): Boolean = value > other.value
-}
-
-@Serializable
-@JvmInline
-value class TaskName(val name: String) {
-    init {
-        require(name.isNotBlank()) { "Task name must not be blank" }
-    }
-}
-
-@Serializable
-enum class Priority {
-    URGENT, NORMAL
-}
+data class Customer(
+    val id: CustomerId,
+    val name: CustomerName,
+    val cellPhone: CellPhone,
+    val email: Email,
+    val address: Address,
+    val fiscalCode: FiscalCode,
+    val customerType: CustomerType,
+)

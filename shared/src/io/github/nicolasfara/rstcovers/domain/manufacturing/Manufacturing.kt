@@ -1,14 +1,19 @@
-package io.github.nicolasfara.rstcovers.entities
+package io.github.nicolasfara.rstcovers.domain.manufacturing
 
-import io.github.nicolasfara.rstcovers.valueobjects.CustomerName
-import io.github.nicolasfara.rstcovers.valueobjects.Hours
-import io.github.nicolasfara.rstcovers.valueobjects.ManufacturingId
+import io.github.nicolasfara.rstcovers.domain.task.Hours
+import io.github.nicolasfara.rstcovers.domain.customer.CustomerName
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import kotlin.jvm.JvmInline
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
+
+@Serializable
+@JvmInline
+value class ManufacturingId(val id: Uuid = Uuid.random())
 
 @Serializable
 data class Manufacturing(
