@@ -1,9 +1,19 @@
+@file:OptIn(ExperimentalRaiseAccumulateApi::class)
 package io.github.nicolasfara.customer
 
-import io.github.nicolasfara.rstcovers.domain.customer.CustomerId
-import io.github.nicolasfara.rstcovers.domain.customer.CustomerRepository
+import arrow.core.raise.ExperimentalRaiseAccumulateApi
+import arrow.core.raise.context.accumulate
+import arrow.core.raise.context.bindOrAccumulate
+import arrow.core.raise.context.either
+import io.github.nicolasfara.rstcovers.domain.customer.Address
+import io.github.nicolasfara.rstcovers.domain.customer.CellPhone
+import io.github.nicolasfara.rstcovers.domain.customer.CustomerName
 import io.github.nicolasfara.rstcovers.domain.customer.CustomerService
+import io.github.nicolasfara.rstcovers.domain.customer.Email
+import io.github.nicolasfara.rstcovers.domain.customer.FiscalCode
+import io.github.nicolasfara.rstcovers.domain.customer.toCustomerType
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.request.receive
 import io.ktor.server.resources.delete
 import io.ktor.server.resources.get
 import io.ktor.server.resources.patch
@@ -16,7 +26,28 @@ object CustomerRoutes {
     fun Routing.customerRoutes(customerService: CustomerService) {
         // CREATE - POST /customers
         post<CustomersResource> {
-//            customerService.createCustomer()
+            val creationRequest = call.receive<CustomerCreationDTO>()
+            either {
+                accumulate {
+                    val name = CustomerName(creationRequest.name).bindOrAccumulate()
+                    val email = Email(creationRequest.email).bindOrAccumulate()
+                    val fiscalCode = FiscalCode(creationRequest.fiscalCode).bindOrAccumulate()
+                    val cellPhone = CellPhone(creationRequest.cellPhone).bindOrAccumulate()
+                    val address = Address(creationRequest.address).bindOrAccumulate()
+                    val customerType = creationRequest.customerType.toCustomerType().bindOrAccumulate()
+                    customerService.createCustomer(
+                        name = name.value,
+                        email = email.value,
+                        fiscalCode = fiscalCode.value,
+                        cellPhone = cellPhone.value,
+                        address = address.value,
+                        type = customerType.value
+                    ).bindOrAccumulate().value
+                }
+            }.fold(
+                ifLeft = { errors -> call.respond(HttpStatusCode.BadRequest, errors.map { it.message ?: "Unknown error" }) },
+                ifRight = { call.respond(HttpStatusCode.Created, it.id) }
+            )
         }
 
         // READ (all) - GET /customers
