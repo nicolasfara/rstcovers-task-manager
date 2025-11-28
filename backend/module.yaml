@@ -1,1 +1,30 @@
 product: jvm/app
+
+dependencies:
+  - ../shared
+  - io.ktor:ktor-server-core:3.3.2
+  - io.ktor:ktor-server-netty:3.3.2
+  - io.ktor:ktor-server-resources:3.3.2
+  - io.ktor:ktor-server-request-validation:3.3.2
+  - io.ktor:ktor-serialization-kotlinx-json:3.3.2
+  - io.ktor:ktor-server-status-pages:3.3.2
+  - io.ktor:ktor-server-content-negotiation:3.3.2
+  - ch.qos.logback:logback-classic:1.5.21
+  - org.jetbrains.exposed:exposed-core:1.0.0-rc-3
+  - org.jetbrains.exposed:exposed-jdbc:1.0.0-rc-3
+  - com.h2database:h2:2.2.224
+  - org.jetbrains.kotlinx:kotlinx-datetime:0.7.1
+  - io.arrow-kt:arrow-core:2.2.0
+  - io.arrow-kt:arrow-fx-coroutines:2.2.0
+  - io.arrow-kt:arrow-resilience:2.2.0
+
+settings:
+  kotlin:
+    allWarningsAsErrors: true
+    serialization:
+      enabled: true
+      format: json
+      version: 1.9.0
+    freeCompilerArgs:
+      - -opt-in=kotlin.uuid.ExperimentalUuidApi
+      - -opt-in=kotlin.time.ExperimentalTime

@@ -3,6 +3,7 @@ package io.github.nicolasfara.rstcovers.domain.customer
 import arrow.core.Either
 import arrow.core.raise.either
 import io.github.nicolasfara.rstcovers.repository.RepositoryError
+import kotlinx.serialization.Serializable
 
 sealed interface CustomerError {
     data class CustomerAlreadyExists(val name: CustomerName) : CustomerError
@@ -35,8 +36,12 @@ class CustomerService(private val repository: CustomerRepository) {
         customer.id
     }
 
-    suspend fun getCustomer(id: CustomerId): Either<CustomerError, Customer?> = either {
-        val customer = repository.findById(id).toCustomerError().bind()
+    suspend fun getAllCustomers(): Either<CustomerError, List<Customer>> = either {
+        repository.getAllCustomers().toCustomerError().bind()
+    }
+
+    suspend fun getCustomer(id: CustomerId): Either<CustomerError, Customer> = either {
+        val customer = repository.findById(id).toCustomerError().bind() ?: raise(CustomerError.CustomerNotFound(id))
         customer
     }
 

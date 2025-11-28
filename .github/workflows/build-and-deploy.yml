@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-2022, macos-14, ubuntu-24.04 ]
+        os: [ ubuntu-24.04 ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -41,21 +41,11 @@ jobs:
 
       - name: Build with Amper
         shell: bash
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            ./amper.bat build
-          else
-            ./amper build
-          fi
+        run: ./amper build
 
       - name: Run tests
         shell: bash
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            ./amper.bat test
-          else
-            ./amper test
-          fi
+        run: ./amper test
 
   success:
     runs-on: ubuntu-24.04

@@ -4,6 +4,8 @@ import arrow.core.Either
 import io.github.nicolasfara.rstcovers.repository.RepositoryError.*
 
 interface CustomerRepository {
+    suspend fun getAllCustomers(): Either<PersistenceError, List<Customer>>
+
     suspend fun exists(email: Email, fiscalCode: FiscalCode): Either<PersistenceError, Boolean>
 
     suspend fun save(customer: Customer): Either<PersistenceError, CustomerId>

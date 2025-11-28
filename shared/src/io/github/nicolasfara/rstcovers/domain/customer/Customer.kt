@@ -1,14 +1,11 @@
 package io.github.nicolasfara.rstcovers.domain.customer
 
-import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmInline
 import kotlin.uuid.Uuid
 
-@Serializable
 @JvmInline
 value class CustomerId(val id: Uuid = Uuid.random())
 
-@Serializable
 @JvmInline
 value class CustomerName(val value: String) {
     init {
@@ -16,12 +13,10 @@ value class CustomerName(val value: String) {
     }
 }
 
-@Serializable
 enum class CustomerType {
     INDIVIDUAL, COMPANY
 }
 
-@Serializable
 @JvmInline
 value class Email(val value: String) {
     init {
@@ -29,7 +24,6 @@ value class Email(val value: String) {
     }
 }
 
-@Serializable
 @JvmInline
 value class CellPhone(val number: String) {
     init {
@@ -39,7 +33,6 @@ value class CellPhone(val number: String) {
     }
 }
 
-@Serializable
 @JvmInline
 value class FiscalCode(val value: String) {
     init {
@@ -47,7 +40,6 @@ value class FiscalCode(val value: String) {
     }
 }
 
-@Serializable
 @JvmInline
 value class Address(val value: String) {
     init {
@@ -55,7 +47,6 @@ value class Address(val value: String) {
     }
 }
 
-@Serializable
 data class Customer(
     val id: CustomerId,
     val name: CustomerName,

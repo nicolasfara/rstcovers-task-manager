@@ -6,9 +6,15 @@ dependencies:
   - org.jetbrains.kotlinx:kotlinx-datetime:0.7.1
   - io.arrow-kt:arrow-core:2.2.0
   - io.arrow-kt:arrow-fx-coroutines:2.2.0
+  - io.arrow-kt:arrow-resilience:2.2.0
+
+test-dependencies:
+  - $kotlin.test
+  - org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2
 
 settings:
   kotlin:
+    allWarningsAsErrors: true
     serialization:
       enabled: true
       format: json
