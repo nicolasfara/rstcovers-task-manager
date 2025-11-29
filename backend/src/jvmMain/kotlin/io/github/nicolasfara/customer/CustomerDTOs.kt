@@ -1,16 +1,19 @@
 package io.github.nicolasfara.customer
 
-import arrow.core.Either
-import io.github.nicolasfara.rstcovers.domain.customer.Address
-import io.github.nicolasfara.rstcovers.domain.customer.CellPhone
+import arrow.core.raise.ExperimentalRaiseAccumulateApi
+import arrow.core.raise.context.accumulate
+import arrow.core.raise.context.accumulating
+import arrow.core.raise.context.bindOrAccumulate
+import arrow.core.raise.context.either
+import io.github.nicolasfara.rstcovers.domain.customer.Address.Companion.validateAddress
+import io.github.nicolasfara.rstcovers.domain.customer.CellPhone.Companion.validateCellPhone
 import io.github.nicolasfara.rstcovers.domain.customer.Customer
-import io.github.nicolasfara.rstcovers.domain.customer.CustomerId
-import io.github.nicolasfara.rstcovers.domain.customer.CustomerName
-import io.github.nicolasfara.rstcovers.domain.customer.CustomerType
-import io.github.nicolasfara.rstcovers.domain.customer.Email
-import io.github.nicolasfara.rstcovers.domain.customer.FiscalCode
+import io.github.nicolasfara.rstcovers.domain.customer.CustomerName.Companion.validateCustomerName
+import io.github.nicolasfara.rstcovers.domain.customer.Email.Companion.validateEmail
+import io.github.nicolasfara.rstcovers.domain.customer.FiscalCode.Companion.validateFiscalCode
+import io.github.nicolasfara.rstcovers.domain.customer.validateCustomerType
+import io.ktor.server.plugins.requestvalidation.ValidationResult
 import kotlinx.serialization.Serializable
-import kotlin.uuid.Uuid
 
 @Serializable
 data class CustomerDTO(
@@ -41,22 +44,21 @@ data class CustomerCreationDTO(
     val cellPhone: String,
     val address: String,
     val customerType: String,
-)
-
-fun CustomerCreationDTO.toCustomer(): Either<Throwable, Customer> {
-    return Either.catch {
-        Customer(
-            id = CustomerId(Uuid.random()),
-            name = CustomerName(name),
-            email = Email(this.email),
-            fiscalCode = FiscalCode(this.fiscalCode),
-            cellPhone = CellPhone(this.cellPhone),
-            address = Address(this.address),
-            customerType = when (customerType) {
-                "INDIVIDUAL" -> CustomerType.INDIVIDUAL
-                "BUSINESS" -> CustomerType.COMPANY
-                else -> throw IllegalArgumentException("Invalid customer type: $customerType")
-            },
+) {
+    companion object {
+        @OptIn(ExperimentalRaiseAccumulateApi::class)
+        fun CustomerCreationDTO.validate(): ValidationResult = either {
+            accumulate {
+                name.validateCustomerName().bindOrAccumulate()
+                email.validateEmail().bindOrAccumulate()
+                fiscalCode.validateFiscalCode().bindOrAccumulate()
+                cellPhone.validateCellPhone().bindOrAccumulate()
+                address.validateAddress().bindOrAccumulate()
+                customerType.validateCustomerType().bindOrAccumulate()
+            }
+        }.fold(
+            ifLeft = { errors -> ValidationResult.Invalid(errors.mapNotNull { it.message }.toList()) },
+            ifRight = { ValidationResult.Valid }
         )
     }
 }

@@ -5,10 +5,10 @@ import arrow.core.raise.either
 import io.github.nicolasfara.rstcovers.repository.RepositoryError
 import kotlinx.serialization.Serializable
 
-sealed class CustomerError : Throwable() {
-    data class CustomerAlreadyExists(val name: CustomerName) : CustomerError()
-    data class CustomerNotFound(val id: CustomerId) : CustomerError()
-    data class CustomerRepositoryError(val reason: RepositoryError) : CustomerError()
+sealed class CustomerError(reason: String?) : Throwable(reason) {
+    data class CustomerAlreadyExists(val name: CustomerName) : CustomerError("Customer with name ${name.value} already exists")
+    data class CustomerNotFound(val id: CustomerId) : CustomerError("Customer with id ${id.id} not found")
+    data class CustomerRepositoryError(val error: RepositoryError) : CustomerError(error.toString())
 }
 
 class CustomerService(private val repository: CustomerRepository) {

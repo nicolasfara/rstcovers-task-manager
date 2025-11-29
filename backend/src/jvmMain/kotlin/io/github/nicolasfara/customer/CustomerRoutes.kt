@@ -1,8 +1,10 @@
 @file:OptIn(ExperimentalRaiseAccumulateApi::class)
 package io.github.nicolasfara.customer
 
+import arrow.core.Either
 import arrow.core.raise.ExperimentalRaiseAccumulateApi
 import arrow.core.raise.context.accumulate
+import arrow.core.raise.context.bind
 import arrow.core.raise.context.bindOrAccumulate
 import arrow.core.raise.context.either
 import io.github.nicolasfara.rstcovers.domain.customer.Address
@@ -21,14 +23,15 @@ import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
+import io.ktor.util.toMap
 
 object CustomerRoutes {
     fun Routing.customerRoutes(customerService: CustomerService) {
         // CREATE - POST /customers
         post<CustomersResource> {
-            val creationRequest = call.receive<CustomerCreationDTO>()
             either {
                 accumulate {
+                    val creationRequest = Either.catch { call.receive<CustomerCreationDTO>() }.bind()
                     val name = CustomerName(creationRequest.name).bindOrAccumulate()
                     val email = Email(creationRequest.email).bindOrAccumulate()
                     val fiscalCode = FiscalCode(creationRequest.fiscalCode).bindOrAccumulate()
@@ -42,10 +45,12 @@ object CustomerRoutes {
                         cellPhone = cellPhone.value,
                         address = address.value,
                         type = customerType.value
-                    ).bindOrAccumulate().value
+                    ).bind()
                 }
             }.fold(
-                ifLeft = { errors -> call.respond(HttpStatusCode.BadRequest, errors.map { it.message ?: "Unknown error" }) },
+                ifLeft = { errors ->
+                    call.respond(HttpStatusCode.BadRequest, errors.map { it.message ?: "Unknown error" })
+                },
                 ifRight = { call.respond(HttpStatusCode.Created, it.id) }
             )
         }
