@@ -42,4 +42,17 @@ class CustomerRepositoryMock : CustomerRepository {
     override suspend fun getAllCustomers(): Either<RepositoryError.PersistenceError, List<Customer>> {
         return customers.values.toList().right()
     }
+
+    override suspend fun getCustomersPaginated(
+        page: Int,
+        pageSize: Int,
+    ): Either<RepositoryError.PersistenceError, List<Customer>> {
+        val offset = (page - 1) * pageSize
+        val paginatedCustomers = customers.values.toList().drop(offset).take(pageSize)
+        return paginatedCustomers.right()
+    }
+
+    override suspend fun countCustomers(): Either<RepositoryError.PersistenceError, Long> {
+        return customers.size.toLong().right()
+    }
 }

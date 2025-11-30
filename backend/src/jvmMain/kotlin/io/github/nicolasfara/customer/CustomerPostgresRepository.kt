@@ -1,7 +1,6 @@
 package io.github.nicolasfara.customer
 
 import arrow.core.Either
-import arrow.core.left
 import arrow.core.right
 import io.github.nicolasfara.PostgresRepository
 import io.github.nicolasfara.rstcovers.domain.customer.Customer
@@ -18,6 +17,8 @@ import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.insert
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.take
 import kotlin.uuid.toJavaUuid
 import kotlin.uuid.toKotlinUuid
 
@@ -32,6 +33,31 @@ class CustomerPostgresRepository :
                     .toList()
                     .map(::rowToCustomer)
             customers.right()
+        }
+
+    override suspend fun getCustomersPaginated(
+        page: Long,
+        pageSize: Int,
+    ): Either<PersistenceError, List<Customer>> =
+        dbQuery {
+            val offset = (page - 1) * pageSize
+            // Use Flow operations drop/take which translate to LIMIT/OFFSET at the database level
+            // Note: For consistent pagination, consider adding ORDER BY in the future
+            val customers =
+                Customers
+                    .selectAll()
+                    .limit(pageSize)
+                    .offset(offset)
+                    .toList()
+                    .map(::rowToCustomer)
+            customers.right()
+        }
+
+    override suspend fun countCustomers(): Either<PersistenceError, Long> =
+        dbQuery {
+            // Use Flow.count() which translates to COUNT(*) at database level
+            val count = Customers.selectAll().count()
+            count.right()
         }
 
     override suspend fun exists(

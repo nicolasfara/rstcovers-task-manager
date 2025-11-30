@@ -26,12 +26,12 @@ data class CustomerDTO(
 
 fun Customer.toCustomerDTO(): CustomerDTO =
     CustomerDTO(
-        name = this.name.value,
-        email = this.email.value,
-        fiscalCode = this.fiscalCode.value,
-        cellPhone = this.cellPhone.value,
-        address = this.address.value,
-        customerType = this.customerType.name,
+        name = name.value,
+        email = email.value,
+        fiscalCode = fiscalCode.value,
+        cellPhone = cellPhone.value,
+        address = address.value,
+        customerType = customerType.name,
     )
 
 @Serializable
@@ -72,3 +72,13 @@ data class CustomerUpdateDTO(
     val address: String?,
     val customerType: String?,
 )
+
+@Serializable
+data class PaginatedCustomersDTO(
+    val customers: List<CustomerDTO>,
+    val page: Long,
+    val pageSize: Int,
+    val totalItems: Long,
+    val totalPages: Int,
+)
+

@@ -6,6 +6,13 @@ import io.github.nicolasfara.rstcovers.repository.RepositoryError.*
 interface CustomerRepository {
     suspend fun getAllCustomers(): Either<PersistenceError, List<Customer>>
 
+    suspend fun getCustomersPaginated(
+        page: Long,
+        pageSize: Int,
+    ): Either<PersistenceError, List<Customer>>
+
+    suspend fun countCustomers(): Either<PersistenceError, Long>
+
     suspend fun exists(
         email: Email,
         fiscalCode: FiscalCode,

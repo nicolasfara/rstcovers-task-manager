@@ -59,10 +59,24 @@ object CustomerRoutes {
         }
 
         // READ (all) - GET /customers
-        get<CustomersResource> {
-            customerService.getAllCustomers().fold(
+        get<CustomersResource> { resource ->
+            val page = if (resource.page < 1) 1 else resource.page
+            val pageSize = if (resource.pageSize !in 1..100) 10 else resource.pageSize
+
+            customerService.getCustomersPaginated(page, pageSize).fold(
                 ifLeft = { call.respond(HttpStatusCode.InternalServerError, listOf(it.message)) },
-                ifRight = { customers -> call.respond(HttpStatusCode.OK, customers.map { it.toCustomerDTO() }) },
+                ifRight = { (customers, total) ->
+                    val totalPages = ((total + pageSize - 1) / pageSize).toInt()
+                    val response =
+                        PaginatedCustomersDTO(
+                            customers = customers.map { it.toCustomerDTO() },
+                            page = page,
+                            pageSize = pageSize,
+                            totalItems = total,
+                            totalPages = totalPages,
+                        )
+                    call.respond(HttpStatusCode.OK, response)
+                },
             )
         }
 

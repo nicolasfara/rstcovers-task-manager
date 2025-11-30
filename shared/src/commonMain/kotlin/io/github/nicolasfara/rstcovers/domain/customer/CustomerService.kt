@@ -54,6 +54,16 @@ class CustomerService(
             repository.getAllCustomers().toCustomerError().bind()
         }
 
+    suspend fun getCustomersPaginated(
+        page: Long,
+        pageSize: Int,
+    ): Either<CustomerError, Pair<List<Customer>, Long>> =
+        either {
+            val customers = repository.getCustomersPaginated(page, pageSize).toCustomerError().bind()
+            val total = repository.countCustomers().toCustomerError().bind()
+            Pair(customers, total)
+        }
+
     suspend fun getCustomer(id: CustomerId): Either<CustomerError, Customer> =
         either {
             val customer = repository.findById(id).toCustomerError().bind() ?: raise(CustomerError.CustomerNotFound(id))
