@@ -24,14 +24,13 @@ object Customers : Table("customers") {
     override val primaryKey = PrimaryKey(id)
 }
 
-fun rowToCustomer(row: ResultRow): Customer {
-    return Customer(
+fun rowToCustomer(row: ResultRow): Customer =
+    Customer(
         id = CustomerId(row[Customers.id].toKotlinUuid()),
         name = CustomerName.coerce(row[Customers.name]),
         email = Email.coerce(row[Customers.email]),
         fiscalCode = FiscalCode.coerce(row[Customers.fiscalCode]),
         cellPhone = CellPhone.coerce(row[Customers.cellPhone]),
         address = Address.coerce(row[Customers.address]),
-        customerType = row[Customers.customerType].coerceToCustomerType()
+        customerType = row[Customers.customerType].coerceToCustomerType(),
     )
-}

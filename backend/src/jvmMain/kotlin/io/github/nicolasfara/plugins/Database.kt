@@ -15,19 +15,20 @@ suspend fun Application.configureDatabase() {
     val dbUser = config.property("user").getString()
     val dbPassword = config.property("password").getString()
 
-    val database = R2dbcDatabase.connect(
-        url = "r2dbc:postgresql://localhost:5432/$dbName",
-        databaseConfig = R2dbcDatabaseConfig {
-            defaultMaxAttempts = 1
-            defaultR2dbcIsolationLevel = IsolationLevel.READ_COMMITTED
-            connectionFactoryOptions {
-                option(ConnectionFactoryOptions.USER, dbUser)
-                option(ConnectionFactoryOptions.PASSWORD, dbPassword)
-            }
-        }
-    )
+    val database =
+        R2dbcDatabase.connect(
+            url = "r2dbc:postgresql://localhost:5432/$dbName",
+            databaseConfig =
+                R2dbcDatabaseConfig {
+                    defaultMaxAttempts = 1
+                    defaultR2dbcIsolationLevel = IsolationLevel.READ_COMMITTED
+                    connectionFactoryOptions {
+                        option(ConnectionFactoryOptions.USER, dbUser)
+                        option(ConnectionFactoryOptions.PASSWORD, dbPassword)
+                    }
+                },
+        )
+
     suspendTransaction(db = database) {
-        SchemaUtils.drop(Customers)
-        SchemaUtils.create(Customers)
     }
 }

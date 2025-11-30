@@ -6,5 +6,8 @@ import kotlin.uuid.Uuid
 @Resource("/customers")
 class CustomersResource {
     @Resource("/{id}")
-    class Id(val parent: CustomersResource = CustomersResource(), val id: Uuid)
+    class Id(
+        val parent: CustomersResource = CustomersResource(),
+        val id: Uuid,
+    )
 }

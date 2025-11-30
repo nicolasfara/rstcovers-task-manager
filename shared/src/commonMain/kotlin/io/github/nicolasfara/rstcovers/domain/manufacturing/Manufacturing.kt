@@ -1,7 +1,7 @@
 package io.github.nicolasfara.rstcovers.domain.manufacturing
 
-import io.github.nicolasfara.rstcovers.domain.task.Hours
 import io.github.nicolasfara.rstcovers.domain.customer.CustomerName
+import io.github.nicolasfara.rstcovers.domain.task.Hours
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
@@ -12,7 +12,9 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @JvmInline
-value class ManufacturingId(val id: Uuid = Uuid.random())
+value class ManufacturingId(
+    val id: Uuid = Uuid.random(),
+)
 
 data class Manufacturing(
     val id: ManufacturingId,

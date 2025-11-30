@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.kotlin.qa)
 }
 
 kotlin {
@@ -11,7 +12,7 @@ kotlin {
         freeCompilerArgs.addAll(
             "-opt-in=kotlin.uuid.ExperimentalUuidApi",
             "-opt-in=kotlin.time.ExperimentalTime",
-            "-Xcontext-parameters"
+            "-Xcontext-parameters",
         )
     }
 

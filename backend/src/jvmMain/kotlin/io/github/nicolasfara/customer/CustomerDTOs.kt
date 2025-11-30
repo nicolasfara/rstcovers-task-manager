@@ -2,7 +2,6 @@ package io.github.nicolasfara.customer
 
 import arrow.core.raise.ExperimentalRaiseAccumulateApi
 import arrow.core.raise.context.accumulate
-import arrow.core.raise.context.accumulating
 import arrow.core.raise.context.bindOrAccumulate
 import arrow.core.raise.context.either
 import io.github.nicolasfara.rstcovers.domain.customer.Address.Companion.validateAddress
@@ -17,7 +16,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CustomerDTO(
-    val id: String,
     val name: String,
     val email: String,
     val fiscalCode: String,
@@ -26,15 +24,15 @@ data class CustomerDTO(
     val customerType: String,
 )
 
-fun Customer.toCustomerDTO(): CustomerDTO = CustomerDTO(
-    id = this.id.id.toString(),
-    name = this.name.value,
-    email = this.email.value,
-    fiscalCode = this.fiscalCode.value,
-    cellPhone = this.cellPhone.number,
-    address = this.address.value,
-    customerType = this.customerType.name,
-)
+fun Customer.toCustomerDTO(): CustomerDTO =
+    CustomerDTO(
+        name = this.name.value,
+        email = this.email.value,
+        fiscalCode = this.fiscalCode.value,
+        cellPhone = this.cellPhone.value,
+        address = this.address.value,
+        customerType = this.customerType.name,
+    )
 
 @Serializable
 data class CustomerCreationDTO(
@@ -47,19 +45,20 @@ data class CustomerCreationDTO(
 ) {
     companion object {
         @OptIn(ExperimentalRaiseAccumulateApi::class)
-        fun CustomerCreationDTO.validate(): ValidationResult = either {
-            accumulate {
-                name.validateCustomerName().bindOrAccumulate()
-                email.validateEmail().bindOrAccumulate()
-                fiscalCode.validateFiscalCode().bindOrAccumulate()
-                cellPhone.validateCellPhone().bindOrAccumulate()
-                address.validateAddress().bindOrAccumulate()
-                customerType.validateCustomerType().bindOrAccumulate()
-            }
-        }.fold(
-            ifLeft = { errors -> ValidationResult.Invalid(errors.mapNotNull { it.message }.toList()) },
-            ifRight = { ValidationResult.Valid }
-        )
+        fun CustomerCreationDTO.validate(): ValidationResult =
+            either {
+                accumulate {
+                    name.validateCustomerName().bindOrAccumulate()
+                    email.validateEmail().bindOrAccumulate()
+                    fiscalCode.validateFiscalCode().bindOrAccumulate()
+                    cellPhone.validateCellPhone().bindOrAccumulate()
+                    address.validateAddress().bindOrAccumulate()
+                    customerType.validateCustomerType().bindOrAccumulate()
+                }
+            }.fold(
+                ifLeft = { errors -> ValidationResult.Invalid(errors.mapNotNull { it.message }.toList()) },
+                ifRight = { ValidationResult.Valid },
+            )
     }
 }
 

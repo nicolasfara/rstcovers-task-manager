@@ -5,8 +5,10 @@ import kotlin.jvm.JvmInline
 import kotlin.uuid.Uuid
 
 @JvmInline
-value class OrderId(val id: Uuid = Uuid.random())
+value class OrderId(
+    val id: Uuid = Uuid.random(),
+)
 
 data class Order(
-    val id: OrderId
+    val id: OrderId,
 )

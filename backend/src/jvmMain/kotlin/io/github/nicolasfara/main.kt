@@ -1,6 +1,6 @@
 package io.github.nicolasfara
 
-import io.github.nicolasfara.customer.CustomerRepositorySql
+import io.github.nicolasfara.customer.CustomerPostgresRepository
 import io.github.nicolasfara.customer.CustomerRoutes.customerRoutes
 import io.github.nicolasfara.plugins.configureDatabase
 import io.github.nicolasfara.plugins.configureMonitoring
@@ -19,13 +19,14 @@ import io.ktor.server.routing.*
 fun main(args: Array<String>) {
     embeddedServer(
         factory = Netty,
-        environment = applicationEnvironment {
-            config = databaseEnvironment
-        },
+        environment =
+            applicationEnvironment {
+                config = databaseEnvironment
+            },
         configure = configureEngine,
         module = {
             module()
-        }
+        },
     ).start(wait = true)
 }
 
@@ -36,11 +37,12 @@ val configureEngine: ApplicationEngine.Configuration.() -> Unit = {
     }
 }
 
-val databaseEnvironment: ApplicationConfig = MapApplicationConfig(
-    "database.name" to "postgres",
-    "database.user" to "postgres",
-    "database.password" to "mysecretpassword"
-)
+val databaseEnvironment: ApplicationConfig =
+    MapApplicationConfig(
+        "database.name" to "postgres",
+        "database.user" to "postgres",
+        "database.password" to "mysecretpassword",
+    )
 
 suspend fun Application.module() {
     configureDatabase()
@@ -64,9 +66,9 @@ suspend fun Application.module() {
         get("/") {
             call.respondText { "hello" }
         }
-        customerRoutes(CustomerService(CustomerRepositorySql()))
+        customerRoutes(CustomerService(CustomerPostgresRepository()))
     }
 }
 
-//@Serializable
-//data class UserSession(val state: String, val token: String)
+// @Serializable
+// data class UserSession(val state: String, val token: String)
