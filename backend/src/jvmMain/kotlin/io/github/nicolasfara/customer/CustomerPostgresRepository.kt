@@ -84,9 +84,9 @@ class CustomerPostgresRepository :
                     it[fiscalCode] = customer.fiscalCode.value
                     it[cellPhone] = customer.cellPhone.value
                     it[address] = customer.address.value
-                    it[customerType] = customer.customerType.name
+                    it[customerType] = customer.customerType
                 } get Customers.id
-            CustomerId(createdId.toKotlinUuid()).right()
+            CustomerId(createdId.value.toKotlinUuid()).right()
         }
 
     override suspend fun findById(id: CustomerId): Either<PersistenceError, Customer?> =
@@ -108,7 +108,7 @@ class CustomerPostgresRepository :
                 it[fiscalCode] = customer.fiscalCode.value
                 it[cellPhone] = customer.cellPhone.value
                 it[address] = customer.address.value
-                it[customerType] = customer.customerType.name
+                it[customerType] = customer.customerType
             }
             Unit.right()
         }

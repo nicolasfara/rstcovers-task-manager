@@ -30,5 +30,7 @@ suspend fun Application.configureDatabase() {
         )
 
     suspendTransaction(db = database) {
+        SchemaUtils.drop(Customers)
+        SchemaUtils.create(Customers)
     }
 }

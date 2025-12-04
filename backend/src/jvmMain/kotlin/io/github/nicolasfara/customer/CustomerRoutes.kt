@@ -3,19 +3,27 @@
 package io.github.nicolasfara.customer
 
 import arrow.core.Either
+import arrow.core.flatten
 import arrow.core.raise.ExperimentalRaiseAccumulateApi
+import arrow.core.raise.accumulate
 import arrow.core.raise.context.accumulate
 import arrow.core.raise.context.bind
 import arrow.core.raise.context.bindOrAccumulate
 import arrow.core.raise.context.either
+import io.github.nicolasfara.errors.collectErrors
 import io.github.nicolasfara.rstcovers.domain.customer.Address
 import io.github.nicolasfara.rstcovers.domain.customer.CellPhone
+import io.github.nicolasfara.rstcovers.domain.customer.Customer
+import io.github.nicolasfara.rstcovers.domain.customer.CustomerCreationDTO
 import io.github.nicolasfara.rstcovers.domain.customer.CustomerError
 import io.github.nicolasfara.rstcovers.domain.customer.CustomerId
 import io.github.nicolasfara.rstcovers.domain.customer.CustomerName
 import io.github.nicolasfara.rstcovers.domain.customer.CustomerService
+import io.github.nicolasfara.rstcovers.domain.customer.CustomerUpdateDTO
 import io.github.nicolasfara.rstcovers.domain.customer.Email
 import io.github.nicolasfara.rstcovers.domain.customer.FiscalCode
+import io.github.nicolasfara.rstcovers.domain.customer.PaginatedCustomersDTO
+import io.github.nicolasfara.rstcovers.domain.customer.toCustomerDTO
 import io.github.nicolasfara.rstcovers.domain.customer.toCustomerType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
@@ -52,7 +60,7 @@ object CustomerRoutes {
                 }
             }.fold(
                 ifLeft = { errors ->
-                    call.respond(HttpStatusCode.BadRequest, errors.map { it.message ?: "Unknown error" })
+                    call.respond(HttpStatusCode.BadRequest, errors.map { it.collectErrors() }.flatten())
                 },
                 ifRight = { call.respond(HttpStatusCode.Created, it.value) },
             )
@@ -108,17 +116,42 @@ object CustomerRoutes {
 
         // PARTIAL UPDATE - PATCH /customers/{id}
         patch<CustomersResource.Id> { resource ->
-            // TODO: Implement partial customer update
-            // val customerId = resource.id
-            // val updates = call.receive<PatchCustomerRequest>()
-            call.respond(HttpStatusCode.OK, mapOf("id" to resource.id.toString(), "message" to "Customer patched"))
+            either {
+                accumulate {
+                    val newCustomerDto = Either.catch { call.receive<CustomerUpdateDTO>() }.bind()
+                    val customerId = CustomerId(resource.id)
+                    val oldCustomer = customerService.getCustomer(customerId).bindOrAccumulate().value
+                    val newName = newCustomerDto.name?.let { CustomerName(it).bindOrAccumulate().value }
+                    val newEmail = newCustomerDto.email?.let { Email(it).bindOrAccumulate().value }
+                    val newFiscalCode = newCustomerDto.fiscalCode?.let { FiscalCode(it).bindOrAccumulate().value }
+                    val newCellPhone = newCustomerDto.cellPhone?.let { CellPhone(it).bindOrAccumulate().value }
+                    val newAddress = newCustomerDto.address?.let { Address(it).bindOrAccumulate().value }
+                    val newCustomerType = newCustomerDto.customerType?.toCustomerType()?.bindOrAccumulate()?.value
+                    val newCustomer = Customer(
+                        id = customerId,
+                        name = newName ?: oldCustomer.name,
+                        email = newEmail ?: oldCustomer.email,
+                        fiscalCode = newFiscalCode ?: oldCustomer.fiscalCode,
+                        cellPhone = newCellPhone ?: oldCustomer.cellPhone,
+                        address = newAddress ?: oldCustomer.address,
+                        customerType = newCustomerType ?: oldCustomer.customerType,
+                    )
+                    customerService.updateCustomer(newCustomer).bind()
+                }
+            }.fold(
+                ifLeft = { errors ->
+                    call.respond(HttpStatusCode.BadRequest, errors.map { it.collectErrors() }.flatten())
+                },
+                ifRight = { call.respond(HttpStatusCode.OK) },
+            )
         }
 
         // DELETE - DELETE /customers/{id}
-        delete<CustomersResource.Id> {
-            // TODO: Implement customer deletion
-            // val customerId = it.id
-            call.respond(HttpStatusCode.NoContent)
+        delete<CustomersResource.Id> { customerId ->
+            customerService.deleteCustomer(CustomerId(customerId.id)).fold(
+                ifLeft = { error -> call.respond(HttpStatusCode.InternalServerError, error.collectErrors()) },
+                ifRight = { call.respond(HttpStatusCode.NoContent) },
+            )
         }
     }
 }
