@@ -6,7 +6,6 @@ import io.github.nicolasfara.plugins.configureDatabase
 import io.github.nicolasfara.plugins.configureMonitoring
 import io.github.nicolasfara.plugins.configureSerialization
 import io.github.nicolasfara.plugins.configureValidation
-import io.github.nicolasfara.rstcovers.domain.customer.CustomerService
 import io.ktor.server.application.*
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.config.MapApplicationConfig
@@ -66,7 +65,7 @@ suspend fun Application.module() {
         get("/") {
             call.respondText { "hello" }
         }
-        customerRoutes(CustomerService(CustomerPostgresRepository()))
+        customerRoutes(CustomerPostgresRepository())
     }
 }
 

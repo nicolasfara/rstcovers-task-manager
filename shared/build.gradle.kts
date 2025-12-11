@@ -13,7 +13,9 @@ kotlin {
         freeCompilerArgs.addAll(
             "-opt-in=kotlin.uuid.ExperimentalUuidApi",
             "-opt-in=kotlin.time.ExperimentalTime",
+            "-opt-in=arrow.core.raise.ExperimentalRaiseAccumulateApi",
             "-Xcontext-parameters",
+            "-Xconsistent-data-class-copy-visibility"
         )
     }
 
