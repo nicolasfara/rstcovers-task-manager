@@ -1,6 +1,8 @@
 package io.github.nicolasfara.plugins
 
 import io.github.nicolasfara.customer.Customers
+import io.github.nicolasfara.employee.EmployeeBudgetOverrides
+import io.github.nicolasfara.employee.Employees
 import io.ktor.server.application.Application
 import io.r2dbc.spi.ConnectionFactoryOptions
 import io.r2dbc.spi.IsolationLevel
@@ -30,7 +32,7 @@ suspend fun Application.configureDatabase() {
         )
 
     suspendTransaction(db = database) {
-        SchemaUtils.drop(Customers)
-        SchemaUtils.create(Customers)
+        SchemaUtils.drop(Customers, Employees, EmployeeBudgetOverrides)
+        SchemaUtils.create(Customers, Employees, EmployeeBudgetOverrides)
     }
 }

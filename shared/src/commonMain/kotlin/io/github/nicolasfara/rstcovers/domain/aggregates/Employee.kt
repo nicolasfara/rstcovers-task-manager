@@ -10,7 +10,7 @@ import io.github.nicolasfara.rstcovers.domain.Week
 import kotlinx.datetime.LocalDate
 
 // Aggregate root: Employee
-data class Employee private constructor(
+data class Employee(
     val id: EmployeeId,
     val name: Name,
     val surname: Surname,

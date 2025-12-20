@@ -33,6 +33,7 @@ kotlin {
         jvmMain.dependencies {
             implementation(project(":shared"))
             implementation(libs.exposed.core)
+            implementation(libs.exposed.kotlin.datetime)
             implementation(libs.exposed.r2dbc)
             implementation(libs.postgresql.r2dbc)
             implementation(libs.bundles.ktor)

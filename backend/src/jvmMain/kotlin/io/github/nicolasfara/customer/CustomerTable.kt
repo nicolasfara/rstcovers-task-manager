@@ -12,7 +12,8 @@ import io.github.nicolasfara.rstcovers.domain.FiscalCode
 import io.github.nicolasfara.rstcovers.domain.Name
 import io.github.nicolasfara.rstcovers.domain.Surname
 import io.github.nicolasfara.rstcovers.domain.entities.Customer
-import io.github.nicolasfara.rstcovers.domain.errors.Error
+import io.github.nicolasfara.errors.getOrThrow
+import io.github.nicolasfara.errors.getOrThrowAll
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.dao.id.UUIDTable
 import kotlin.uuid.toKotlinUuid
@@ -30,18 +31,6 @@ object Customers : UUIDTable("customers") {
     val fiscalCode = varchar("fiscal_code", 50).uniqueIndex()
     val customerType = enumeration<CustomerType>("customer_type")
 }
-
-private fun <E: Error, A> Either<E, A>.getOrThrow(): A =
-    when (this) {
-        is Either.Left -> error("Data layer corrupted: ${this.value.message}")
-        is Either.Right -> this.value
-    }
-
-private fun <E: Error, A> Either<Nel<E>, A>.getOrThrowAll(): A =
-    when (this) {
-        is Either.Left -> error("Data layer corrupted: ${this.value.joinToString { it.message }}")
-        is Either.Right -> this.value
-    }
 
 fun rowToCustomer(row: ResultRow): Customer =
     Customer(

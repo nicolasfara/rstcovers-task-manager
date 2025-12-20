@@ -2,6 +2,8 @@ package io.github.nicolasfara
 
 import io.github.nicolasfara.customer.CustomerPostgresRepository
 import io.github.nicolasfara.customer.CustomerRoutes.customerRoutes
+import io.github.nicolasfara.employee.EmployeePostgresRepository
+import io.github.nicolasfara.employee.EmployeeRoutes.employeeRoutes
 import io.github.nicolasfara.plugins.configureDatabase
 import io.github.nicolasfara.plugins.configureMonitoring
 import io.github.nicolasfara.plugins.configureSerialization
@@ -66,6 +68,7 @@ suspend fun Application.module() {
             call.respondText { "hello" }
         }
         customerRoutes(CustomerPostgresRepository())
+        employeeRoutes(EmployeePostgresRepository())
     }
 }
 

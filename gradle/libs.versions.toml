@@ -33,6 +33,7 @@ ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging", versio
 logback-classic = { module = "ch.qos.logback:logback-classic", version = "1.5.21" }
 
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
 exposed-r2dbc = { module = "org.jetbrains.exposed:exposed-r2dbc", version.ref = "exposed" }
 postgresql-r2dbc = { module = "org.postgresql:r2dbc-postgresql", version = "1.0.7.RELEASE" }
 
