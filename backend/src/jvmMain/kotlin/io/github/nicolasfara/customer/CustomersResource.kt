@@ -5,8 +5,8 @@ import kotlin.uuid.Uuid
 
 @Resource("/customers")
 class CustomersResource(
-    val page: Long = 1,
-    val pageSize: Int = 10,
+    val page: Long? = null,
+    val pageSize: Int? = null,
 ) {
     @Resource("/{id}")
     class Id(
